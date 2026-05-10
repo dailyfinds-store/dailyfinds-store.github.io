@@ -66,7 +66,16 @@
             // SHOW PRODUCT DETAIL
             const product = productData[productId];
             document.getElementById('product-title').innerText = product.name;
-            document.getElementById('product-image').src = product.image;
+                        // Use absolute URL for images to avoid path issues on GitHub Pages
+                        const imgEl = document.getElementById('product-image');
+                        const resolveImage = (p) => {
+                            if (!p) return '';
+                            if (p.startsWith('http://') || p.startsWith('https://')) return p;
+                            // make absolute path
+                            return window.location.origin.replace(/\/$/, '') + '/' + p.replace(/^\//, '');
+                        };
+                        imgEl.onerror = () => { imgEl.src = 'https://via.placeholder.com/800x600?text=Image+Unavailable'; };
+                        imgEl.src = resolveImage(product.image);
             
             const linksContainer = document.getElementById('links-container');
             product.links.forEach((link, index) => {
@@ -84,7 +93,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white p-4 rounded-lg shadow border border-gray-100 flex flex-col items-center text-center";
                 card.innerHTML = `
-                    <img src="${product.image}" class="h-40 w-full object-contain mb-4">
+                    <img src="${(product.image && (product.image.startsWith('http') ? product.image : window.location.origin + '/' + product.image.replace(/^\//,''))) || 'https://via.placeholder.com/400x300?text=Image'}" class="h-40 w-full object-contain mb-4" onerror="this.src='https://via.placeholder.com/400x300?text=Image'">
                     <h3 class="font-bold text-gray-700 mb-4">${product.name}</h3>
                     <a href="?id=${id}" class="mt-auto bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold">View Deals</a>
                 `;
