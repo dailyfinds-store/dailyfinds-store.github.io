@@ -19,3 +19,13 @@ Notes:
 - The included GitHub Actions workflow `/.github/workflows/deploy-pages.yml` publishes `index.html` to Pages automatically when you push to `main`.
 - The repository can remain private; Pages will publish the site publicly at the URL above.
 - If you want a custom domain, add a `CNAME` file or configure in GitHub Pages settings.
+
+Local images
+- To use local images (recommended), run the download script which saves images into an `images/` folder used by `index.html`:
+
+```bash
+chmod +x scripts/download-images.sh
+./scripts/download-images.sh
+```
+
+This will download the shower-drain image to `images/shower-drain.jpg` and `index.html` references it locally.
