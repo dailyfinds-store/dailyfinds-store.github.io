@@ -1,175 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Product Bridge — Deals</title>
-    <meta name="description" content="Product bridge page — dynamic affiliate links" />
-    <script>
-      // Tailwind config: add Amazon color
-      window.tailwind = window.tailwind || {};
-      window.tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              amazon: '#FF9900'
-            }
-          }
-        }
-      }
-    </script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Finds Store | Best Curated Deals</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="min-h-screen bg-white text-gray-800 antialiased">
-    <div id="app" class="pb-28">
-      <!-- Content rendered by JS -->
-    </div>
+    <style>
+        .amazon-orange { background-color: #FF9900; }
+        .amazon-orange:hover { background-color: #e68a00; }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
-    <footer class="fixed left-0 right-0 bottom-0 bg-gray-100 border-t border-gray-200 text-sm text-gray-700">
-      <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div class="font-medium">As an Amazon Associate, I earn from qualifying purchases.</div>
-        <div><a href="#privacy" class="text-amazon font-semibold">Privacy Policy</a></div>
-      </div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm p-4 text-center">
+        <h1 class="text-2xl font-bold text-gray-800">Daily Finds Store</h1>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-2xl">
+        <div id="product-content" class="bg-white rounded-lg shadow-md p-6 hidden">
+            <!-- Product Detail View -->
+            <h2 id="product-title" class="text-xl font-bold mb-4 text-gray-800"></h2>
+            <img id="product-image" src="" alt="Product Image" class="w-full h-64 object-contain mb-6 rounded-md">
+            
+            <div id="links-container" class="space-y-4">
+                <!-- Buttons will be injected here -->
+            </div>
+        </div>
+
+        <!-- Home Gallery (Shows when no ID is present) -->
+        <div id="home-gallery" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+            <!-- Product cards injected here -->
+        </div>
+    </main>
+
+    <!-- Legal Footer -->
+    <footer class="bg-gray-800 text-white p-6 text-center text-sm mt-auto">
+        <p class="mb-2">As an Amazon Associate, I earn from qualifying purchases.</p>
+        <p class="text-gray-400">&copy; 2026 Daily Finds Store. All rights reserved.</p>
     </footer>
 
     <script>
-      // Product data: keys are IDs used via ?id=product1
-      const productData = {
-        product1: {
-          name: 'Echo Dot (4th Gen)',
-          image: 'https://via.placeholder.com/800x600?text=Echo+Dot+4th+Gen',
-          links: [
-            'https://www.amazon.com/dp/B07FZ8S74R',
-            'https://www.example.com/echo-deal'
-          ]
-        },
-        product2: {
-          name: 'Fire TV Stick',
-          image: 'https://via.placeholder.com/800x600?text=Fire+TV+Stick',
-          links: [
-            'https://www.amazon.com/dp/B08XVYZ1Y5'
-          ]
-        },
-        product3: {
-          name: 'Kindle Paperwhite',
-          image: 'https://via.placeholder.com/800x600?text=Kindle+Paperwhite',
-          links: [
-            'https://www.amazon.com/dp/B08KTZ8249',
-            'https://www.example.com/kindle-deal',
-            'https://affiliate.example.org/kindle'
-          ]
-        }
-      };
+        const productData = {
+            "shower-drain-stickers": {
+                name: "Disposable Shower Drain Hair Catcher Mesh Stickers",
+                image: "https://m.media-amazon.com/images/I/71u9S9v6nBL._AC_SL1500_.jpg",
+                links: [
+                    "https://amzn.to/example1",
+                    "https://amzn.to/example2",
+                    "https://amzn.to/example3",
+                    "https://amzn.to/example4",
+                    "https://amzn.to/example5"
+                ]
+            }
+            // Add next 24 products here following the same format
+        };
 
-      const app = document.getElementById('app');
-
-      function clear() { app.innerHTML = ''; }
-
-      function renderGallery() {
-        clear();
-        const container = document.createElement('div');
-        container.className = 'max-w-4xl mx-auto px-4 py-6';
-
-        const header = document.createElement('h1');
-        header.className = 'text-2xl font-semibold mb-4';
-        header.textContent = 'Deal Gallery';
-        container.appendChild(header);
-
-        const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-4';
-
-        Object.entries(productData).forEach(([id, p]) => {
-          const card = document.createElement('div');
-          card.className = 'bg-white rounded-lg shadow-sm overflow-hidden border';
-
-          const img = document.createElement('img');
-          img.src = p.image;
-          img.alt = p.name;
-          img.className = 'w-full h-40 object-cover';
-          card.appendChild(img);
-
-          const body = document.createElement('div');
-          body.className = 'p-3';
-
-          const name = document.createElement('div');
-          name.className = 'font-medium mb-2';
-          name.textContent = p.name;
-          body.appendChild(name);
-
-          const btn = document.createElement('a');
-          btn.href = `?id=${encodeURIComponent(id)}`;
-          btn.className = 'inline-block w-full text-center bg-amazon text-white py-2 rounded-md font-semibold';
-          btn.textContent = 'View Deals';
-          body.appendChild(btn);
-
-          card.appendChild(body);
-          grid.appendChild(card);
-        });
-
-        container.appendChild(grid);
-        app.appendChild(container);
-      }
-
-      function renderProduct(p, id) {
-        clear();
-        const container = document.createElement('div');
-        container.className = 'max-w-3xl mx-auto px-4 py-6';
-
-        const back = document.createElement('a');
-        back.href = window.location.pathname;
-        back.className = 'text-sm text-gray-600 mb-4 inline-block';
-        back.textContent = '← Back to Deals';
-        container.appendChild(back);
-
-        const title = document.createElement('h1');
-        title.className = 'text-2xl sm:text-3xl font-bold mb-4';
-        title.textContent = p.name;
-        container.appendChild(title);
-
-        const img = document.createElement('img');
-        img.src = p.image;
-        img.alt = p.name;
-        img.className = 'w-full rounded-lg mb-6 object-cover';
-        container.appendChild(img);
-
-        const btns = document.createElement('div');
-        btns.className = 'space-y-3';
-
-        p.links.forEach((url, i) => {
-          const label = i === 0 ? `Option ${i+1}: Check Price` : (i === 1 ? `Option ${i+1}: View on Amazon` : `Option ${i+1}: Visit Link`);
-          const a = document.createElement('a');
-          a.href = url;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          a.className = 'block w-full text-center bg-amazon hover:bg-[#ffb84d] text-white py-3 rounded-md font-semibold transition';
-          a.textContent = label;
-          btns.appendChild(a);
-        });
-
-        container.appendChild(btns);
-        app.appendChild(container);
-      }
-
-      function renderNotFound(id) {
-        clear();
-        const c = document.createElement('div');
-        c.className = 'max-w-3xl mx-auto px-4 py-6 text-center';
-        c.innerHTML = `<h2 class="text-xl font-semibold mb-2">Product not found</h2><p class="text-gray-600 mb-4">No product matches the id: <strong>${id}</strong></p><a href="${window.location.pathname}" class="inline-block bg-amazon text-white px-4 py-2 rounded-md">Back to Gallery</a>`;
-        app.appendChild(c);
-      }
-
-      // Entry
-      (function() {
         const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-        if (id) {
-          const p = productData[id];
-          if (p) renderProduct(p, id);
-          else renderNotFound(id);
+        const productId = params.get('id');
+
+        const contentDiv = document.getElementById('product-content');
+        const galleryDiv = document.getElementById('home-gallery');
+
+        if (productId && productData[productId]) {
+            // SHOW PRODUCT DETAIL
+            const product = productData[productId];
+            document.getElementById('product-title').innerText = product.name;
+            document.getElementById('product-image').src = product.image;
+            
+            const linksContainer = document.getElementById('links-container');
+            product.links.forEach((link, index) => {
+                const btn = document.createElement('a');
+                btn.href = link;
+                btn.target = "_blank";
+                btn.className = "amazon-orange text-white font-bold py-4 px-6 rounded-lg block text-center shadow-md transition duration-200";
+                btn.innerText = `Option ${index + 1}: Check Latest Price`;
+                linksContainer.appendChild(btn);
+            });
+            contentDiv.classList.remove('hidden');
         } else {
-          renderGallery();
+            // SHOW HOME GALLERY
+            for (const [id, product] of Object.entries(productData)) {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-lg shadow border border-gray-100 flex flex-col items-center text-center";
+                card.innerHTML = `
+                    <img src="${product.image}" class="h-40 w-full object-contain mb-4">
+                    <h3 class="font-bold text-gray-700 mb-4">${product.name}</h3>
+                    <a href="?id=${id}" class="mt-auto bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold">View Deals</a>
+                `;
+                galleryDiv.appendChild(card);
+            }
+            galleryDiv.classList.remove('hidden');
         }
-      })();
     </script>
-  </body>
+</body>
 </html>
