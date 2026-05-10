@@ -91,6 +91,12 @@
                 btn.innerText = `Option ${index + 1}: Check Latest Price`;
                 linksContainer.appendChild(btn);
             });
+            // Add a back-to-home button
+            const back = document.createElement('a');
+            back.href = window.location.pathname.replace(/\/$/, '') + '/';
+            back.className = "mt-4 inline-block text-sm px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100";
+            back.innerText = 'Back to Home';
+            linksContainer.appendChild(back);
             contentDiv.classList.remove('hidden');
         } else {
             // SHOW HOME GALLERY
