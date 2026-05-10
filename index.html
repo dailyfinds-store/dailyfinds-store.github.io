@@ -75,7 +75,12 @@
                             return window.location.origin.replace(/\/$/, '') + '/' + p.replace(/^\//, '');
                         };
                         imgEl.onerror = () => { imgEl.src = 'https://via.placeholder.com/800x600?text=Image+Unavailable'; };
-                        imgEl.src = resolveImage(product.image);
+                        // Preload image to avoid showing broken alt text while browser fetches
+                        const imgUrl = resolveImage(product.image);
+                        const pre = new Image();
+                        pre.onload = () => { imgEl.src = imgUrl; };
+                        pre.onerror = () => { imgEl.src = 'https://via.placeholder.com/800x600?text=Image+Unavailable'; };
+                        pre.src = imgUrl;
             
             const linksContainer = document.getElementById('links-container');
             product.links.forEach((link, index) => {
