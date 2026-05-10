@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Product Bridge — Deals</title>
+    <meta name="description" content="Product bridge page — dynamic affiliate links" />
+    <script>
+      // Tailwind config: add Amazon color
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              amazon: '#FF9900'
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-white text-gray-800 antialiased">
+    <div id="app" class="pb-28">
+      <!-- Content rendered by JS -->
+    </div>
+
+    <footer class="fixed left-0 right-0 bottom-0 bg-gray-100 border-t border-gray-200 text-sm text-gray-700">
+      <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div class="font-medium">As an Amazon Associate, I earn from qualifying purchases.</div>
+        <div><a href="#privacy" class="text-amazon font-semibold">Privacy Policy</a></div>
+      </div>
+    </footer>
+
+    <script>
+      // Product data: keys are IDs used via ?id=product1
+      const productData = {
+        product1: {
+          name: 'Echo Dot (4th Gen)',
+          image: 'https://via.placeholder.com/800x600?text=Echo+Dot+4th+Gen',
+          links: [
+            'https://www.amazon.com/dp/B07FZ8S74R',
+            'https://www.example.com/echo-deal'
+          ]
+        },
+        product2: {
+          name: 'Fire TV Stick',
+          image: 'https://via.placeholder.com/800x600?text=Fire+TV+Stick',
+          links: [
+            'https://www.amazon.com/dp/B08XVYZ1Y5'
+          ]
+        },
+        product3: {
+          name: 'Kindle Paperwhite',
+          image: 'https://via.placeholder.com/800x600?text=Kindle+Paperwhite',
+          links: [
+            'https://www.amazon.com/dp/B08KTZ8249',
+            'https://www.example.com/kindle-deal',
+            'https://affiliate.example.org/kindle'
+          ]
+        }
+      };
+
+      const app = document.getElementById('app');
+
+      function clear() { app.innerHTML = ''; }
+
+      function renderGallery() {
+        clear();
+        const container = document.createElement('div');
+        container.className = 'max-w-4xl mx-auto px-4 py-6';
+
+        const header = document.createElement('h1');
+        header.className = 'text-2xl font-semibold mb-4';
+        header.textContent = 'Deal Gallery';
+        container.appendChild(header);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-4';
+
+        Object.entries(productData).forEach(([id, p]) => {
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow-sm overflow-hidden border';
+
+          const img = document.createElement('img');
+          img.src = p.image;
+          img.alt = p.name;
+          img.className = 'w-full h-40 object-cover';
+          card.appendChild(img);
+
+          const body = document.createElement('div');
+          body.className = 'p-3';
+
+          const name = document.createElement('div');
+          name.className = 'font-medium mb-2';
+          name.textContent = p.name;
+          body.appendChild(name);
+
+          const btn = document.createElement('a');
+          btn.href = `?id=${encodeURIComponent(id)}`;
+          btn.className = 'inline-block w-full text-center bg-amazon text-white py-2 rounded-md font-semibold';
+          btn.textContent = 'View Deals';
+          body.appendChild(btn);
+
+          card.appendChild(body);
+          grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+        app.appendChild(container);
+      }
+
+      function renderProduct(p, id) {
+        clear();
+        const container = document.createElement('div');
+        container.className = 'max-w-3xl mx-auto px-4 py-6';
+
+        const back = document.createElement('a');
+        back.href = window.location.pathname;
+        back.className = 'text-sm text-gray-600 mb-4 inline-block';
+        back.textContent = '← Back to Deals';
+        container.appendChild(back);
+
+        const title = document.createElement('h1');
+        title.className = 'text-2xl sm:text-3xl font-bold mb-4';
+        title.textContent = p.name;
+        container.appendChild(title);
+
+        const img = document.createElement('img');
+        img.src = p.image;
+        img.alt = p.name;
+        img.className = 'w-full rounded-lg mb-6 object-cover';
+        container.appendChild(img);
+
+        const btns = document.createElement('div');
+        btns.className = 'space-y-3';
+
+        p.links.forEach((url, i) => {
+          const label = i === 0 ? `Option ${i+1}: Check Price` : (i === 1 ? `Option ${i+1}: View on Amazon` : `Option ${i+1}: Visit Link`);
+          const a = document.createElement('a');
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.className = 'block w-full text-center bg-amazon hover:bg-[#ffb84d] text-white py-3 rounded-md font-semibold transition';
+          a.textContent = label;
+          btns.appendChild(a);
+        });
+
+        container.appendChild(btns);
+        app.appendChild(container);
+      }
+
+      function renderNotFound(id) {
+        clear();
+        const c = document.createElement('div');
+        c.className = 'max-w-3xl mx-auto px-4 py-6 text-center';
+        c.innerHTML = `<h2 class="text-xl font-semibold mb-2">Product not found</h2><p class="text-gray-600 mb-4">No product matches the id: <strong>${id}</strong></p><a href="${window.location.pathname}" class="inline-block bg-amazon text-white px-4 py-2 rounded-md">Back to Gallery</a>`;
+        app.appendChild(c);
+      }
+
+      // Entry
+      (function() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (id) {
+          const p = productData[id];
+          if (p) renderProduct(p, id);
+          else renderNotFound(id);
+        } else {
+          renderGallery();
+        }
+      })();
+    </script>
+  </body>
+</html>
